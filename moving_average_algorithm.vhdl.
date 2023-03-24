@@ -1,0 +1,29 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity low_pass_filter is
+  port (
+    clk     : in  std_logic;
+    reset_n : in  std_logic;
+    x       : in  std_logic_vector(15 downto 0);
+    y       : out std_logic_vector(15 downto 0)
+  );
+end low_pass_filter;
+
+architecture behavioral of low_pass_filter is
+  signal x_reg, y_reg : std_logic_vector(15 downto 0);
+begin
+  process (clk, reset_n)
+    variable sum : integer := 0;
+  begin
+    if reset_n = '0' then
+      x_reg <= (others => '0');
+      y_reg <= (others => '0');
+    elsif rising_edge(clk) then
+      x_reg <= x;
+      sum := to_integer(unsigned(x_reg)) + to_integer(unsigned(y_reg));
+      y_reg <= std_logic_vector(to_unsigned(sum/2, y_reg'length));
+    end if;
+  end process;
+  y <= y_reg;
+end behavioral;
